@@ -9,13 +9,13 @@ import java.util.Set;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+@Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "user")
 public class User {
 
     public enum Gender { MALE, FEMALE }
@@ -37,69 +37,55 @@ public class User {
     @Column(name = "ID", columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "USERNAME", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "GENDER", length = 6, nullable = false)
+    @Column(nullable = false, length = 6)
     private String gender;
 
-    @Column(name = "BIRTHDATE", nullable = false)
+    @Column(nullable = false)
     private Date birthdate;
 
-    @Column(name = "HEIGHT_IN_INCHES", nullable = false)
+    @Column(nullable = false)
     private double heightInInches;
 
-    @Column(name = "ACTIVITY_LEVEL", nullable = false)
+    @Column(nullable = false)
     private double activityLevel;
 
-    @Column(name = "EMAIL", length = 100, nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "PASSWORD_HASH", length = 100)
     private String passwordHash;
 
-    @Column(name = "FIRST_NAME", length = 30, nullable = false)
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(name = "LAST_NAME", length = 20, nullable = false)
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(name = "CREATED_TIME", nullable = false)
+    @Column(nullable = false)
     private Timestamp createdTime;
 
-    @Column(name = "LAST_UPDATED_TIME", nullable = false)
+    @Column(nullable = false)
     private Timestamp lastUpdatedTime;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude // prevents infinite recursion
-    @ToString.Exclude // prevents stack overflow in toString()
     @JsonManagedReference
+    @Builder.Default
     private Set<Weight> weights = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @JsonManagedReference
+    @Builder.Default
     private Set<Goal> goals = new HashSet<>();
 
-    // Convenience methods to manage bidirectional relationships
-    public void addWeight(Weight weight) {
-        weights.add(weight);
-        weight.setUser(this);
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    private Set<Activity> activities = new HashSet<>();
 
-    public void removeWeight(Weight weight) {
-        weights.remove(weight);
-        weight.setUser(null);
-    }
-
-    public void addGoal(Goal goal) {
-        goals.add(goal);
-        goal.setUser(this);
-    }
-
-    public void removeGoal(Goal goal) {
-        goals.remove(goal);
-        goal.setUser(null);
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @Builder.Default
+    private Set<Steps> steps = new HashSet<>();
 }

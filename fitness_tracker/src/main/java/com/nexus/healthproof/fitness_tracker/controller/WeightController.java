@@ -10,30 +10,38 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/weights")
+@RequestMapping("/api/users/{userId}/weights")
 @RequiredArgsConstructor
 public class WeightController {
 
     private final WeightService weightService;
 
-    // Add weight entry for a specific user
-    @PostMapping("/{userId}")
+    @PostMapping
     public ResponseEntity<Weight> addWeight(@PathVariable UUID userId, @RequestBody Weight weight) {
-        Weight savedWeight = weightService.addWeight(userId, weight);
-        return ResponseEntity.ok(savedWeight);
+        return ResponseEntity.ok(weightService.addWeight(userId, weight));
     }
 
-    // Get all weight entries of a user
-    @GetMapping("/{userId}")
+    @GetMapping
     public ResponseEntity<List<Weight>> getWeightsByUser(@PathVariable UUID userId) {
-        List<Weight> weights = weightService.getWeightsByUser(userId);
-        return ResponseEntity.ok(weights);
+        return ResponseEntity.ok(weightService.getWeightsByUser(userId));
     }
 
-    // Delete a weight entry
+    @PatchMapping("/{weightId}")
+    public ResponseEntity<Weight> updateWeight(@PathVariable UUID userId, @PathVariable UUID weightId,
+                                               @RequestBody Weight weightUpdates) {
+        return ResponseEntity.ok(weightService.updateWeight(userId, weightId, weightUpdates));
+    }
+
     @DeleteMapping("/{weightId}")
-    public ResponseEntity<Void> deleteWeight(@PathVariable UUID weightId) {
-        weightService.deleteWeight(weightId);
+    public ResponseEntity<Void> deleteWeight(@PathVariable UUID userId, @PathVariable UUID weightId) {
+        weightService.deleteWeight(userId, weightId);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @DeleteMapping("/all")
+    public ResponseEntity<Void> deleteAll(@PathVariable("userId") UUID userId){
+        weightService.deleteAll(userId);
+
         return ResponseEntity.noContent().build();
     }
 }
