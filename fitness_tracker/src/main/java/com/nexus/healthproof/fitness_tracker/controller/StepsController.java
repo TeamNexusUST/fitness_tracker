@@ -48,23 +48,15 @@ public class StepsController {
     public ResponseEntity<Steps> read(@PathVariable UUID userId, @PathVariable LocalDate date){
         Steps step = stepsService.read(userId,date);
 
-        if(step != null){
-            return ResponseEntity.ok(step);
-        }
-
-        return ResponseEntity.notFound().build();                  
+        return ResponseEntity.ok(step);               
     }
 
     // update step of a user
     @PutMapping("/{date}")
     public ResponseEntity<Steps> update(@PathVariable UUID userId,@PathVariable LocalDate date,@RequestBody Steps steps){
         Steps step = stepsService.update(userId,date, steps);
-
-        if(step != null){
-            return ResponseEntity.ok(step);
-        }
-
-        return ResponseEntity.notFound().build();
+ 
+        return ResponseEntity.ok(step);
     }
 
     // Delete all steps of a user
@@ -78,10 +70,7 @@ public class StepsController {
     // Delete a step of a user
     @DeleteMapping("/{date}")
     public ResponseEntity<Steps> delete(@PathVariable UUID userId,@PathVariable LocalDate date){
-        if(stepsService.delete(userId,date)){
-            return  ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.notFound().build();
+            
+        return  ResponseEntity.noContent().build();
     }
 }

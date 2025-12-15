@@ -48,10 +48,6 @@ public class ActivityController {
     public ResponseEntity<List<Activity>> read(@RequestParam UUID userId,@RequestParam String name){
         List<Activity> activities = activityService.read(userId,name);
 
-        if(activities.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-
         return ResponseEntity.ok(activities);
     }
 
@@ -60,11 +56,8 @@ public class ActivityController {
     public ResponseEntity<Activity> update(@PathVariable UUID userId,@PathVariable UUID activityId,@RequestBody Activity activity){
         Activity act=activityService.update(userId,activityId, activity);
 
-        if(act!=null){
-            return ResponseEntity.ok(act);
-        }
+        return ResponseEntity.ok(act);
 
-        return ResponseEntity.notFound().build();
     }
 
     // Delete all activities of a user
@@ -78,10 +71,7 @@ public class ActivityController {
     // Delete a actvity of a user
     @DeleteMapping("/{activityId}")
     public ResponseEntity<Activity> delete(@PathVariable UUID userId,@PathVariable UUID activityId){
-        if(activityService.delete(userId,activityId)){
-            return ResponseEntity.noContent().build();
-        }
-        
-        return ResponseEntity.notFound().build();
+            
+        return ResponseEntity.noContent().build();
     }
 }

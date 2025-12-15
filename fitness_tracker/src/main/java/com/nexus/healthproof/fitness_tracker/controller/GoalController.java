@@ -1,6 +1,5 @@
 package com.nexus.healthproof.fitness_tracker.controller;
 
-import com.nexus.healthproof.fitness_tracker.entity.Activity;
 import com.nexus.healthproof.fitness_tracker.entity.Goal;
 import com.nexus.healthproof.fitness_tracker.service.GoalService;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,6 @@
 package com.nexus.healthproof.fitness_tracker.service;
 
 import com.nexus.healthproof.fitness_tracker.entity.User;
-import com.nexus.healthproof.fitness_tracker.entity.Goal;
-import com.nexus.healthproof.fitness_tracker.entity.Weight;
 import com.nexus.healthproof.fitness_tracker.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
