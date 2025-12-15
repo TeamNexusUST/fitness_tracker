@@ -11,7 +11,7 @@ import com.nexus.healthproof.fitness_tracker.entity.User;
 import com.nexus.healthproof.fitness_tracker.repository.StepsRepository;
 import com.nexus.healthproof.fitness_tracker.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -34,7 +34,7 @@ public class StepsService {
         return stepsRepository.save(steps);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Steps> read(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -42,7 +42,7 @@ public class StepsService {
         return stepsRepository.findByUser(user);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Steps read(UUID userId, LocalDate date) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
