@@ -17,14 +17,11 @@ public class UserController {
 
     private final UserService userService;
 
-    // Create user along with nested goals and weights
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
-        User savedUser = userService.createUser(user);
-        return ResponseEntity.ok(savedUser);
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
-    // Get user by ID
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
         return userService.getUserById(id)
@@ -32,24 +29,20 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // Update user (partial update)
-    @PatchMapping("/{id}")  // semantic for partial updates
+    @PatchMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User userUpdates) {
         try {
-            User updatedUser = userService.updateUser(id, userUpdates);
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(userService.updateUser(id, userUpdates));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // Delete user (will cascade delete goals and weights if cascade is set)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         try {

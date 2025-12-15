@@ -2,7 +2,7 @@ package com.nexus.healthproof.fitness_tracker.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Builder
 @Entity
 @Table(name = "goal")
-public class Goal{
+public class Goal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,7 +21,7 @@ public class Goal{
 
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
-    @ToString.Exclude  // Prevent infinite recursion with User
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonBackReference
     private User user;
@@ -33,10 +33,10 @@ public class Goal{
     private Double targetValue;
 
     @Column(name = "START_DATE", nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "END_DATE", nullable = true)
-    private Date endDate;
+    private LocalDate endDate;
 
     @PrePersist
     public void prePersist() {
@@ -44,7 +44,7 @@ public class Goal{
             id = UUID.randomUUID();
         }
         if (startDate == null) {
-            startDate = new Date();
+            startDate = LocalDate.now();
         }
     }
 }
