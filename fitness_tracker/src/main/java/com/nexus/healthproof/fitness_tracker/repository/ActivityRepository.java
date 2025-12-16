@@ -14,5 +14,5 @@ import com.nexus.healthproof.fitness_tracker.entity.User;
 public interface ActivityRepository extends JpaRepository<Activity,UUID>{
     List<Activity> findByUser(User user);
 
-    List<Activity> findByUserAndActivityName(User user,String name);
+    List<Activity> findByUserAndName(User user,String name);
 }

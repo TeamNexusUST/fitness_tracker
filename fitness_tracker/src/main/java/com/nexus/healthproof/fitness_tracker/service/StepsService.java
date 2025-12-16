@@ -5,13 +5,16 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nexus.healthproof.fitness_tracker.entity.Steps;
 import com.nexus.healthproof.fitness_tracker.entity.User;
+import com.nexus.healthproof.fitness_tracker.exception.UserNotFoundException;
+import com.nexus.healthproof.fitness_tracker.exception.StepsNotFoundException;
+import com.nexus.healthproof.fitness_tracker.exception.StepsAlreadyExistsException;
 import com.nexus.healthproof.fitness_tracker.repository.StepsRepository;
 import com.nexus.healthproof.fitness_tracker.repository.UserRepository;
 
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,10 +27,10 @@ public class StepsService {
     @Transactional
     public Steps create(UUID userId, Steps steps) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
         if (stepsRepository.existsByUserAndDate(user, steps.getDate())) {
-            throw new IllegalArgumentException("Steps already recorded for this date");
+            throw new StepsAlreadyExistsException("Steps already recorded for date: " + steps.getDate());
         }
 
         steps.setUser(user);
@@ -37,7 +40,7 @@ public class StepsService {
     @Transactional(readOnly = true)
     public List<Steps> read(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
         return stepsRepository.findByUser(user);
     }
@@ -45,33 +48,24 @@ public class StepsService {
     @Transactional(readOnly = true)
     public Steps read(UUID userId, LocalDate date) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
         return stepsRepository.findByUserAndDate(user, date)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Steps not found for date " + date));
+                .orElseThrow(() -> new StepsNotFoundException("Steps not found for date: " + date));
     }
 
     @Transactional
     public Steps update(UUID userId, LocalDate date, Steps steps) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
         Steps existing = stepsRepository.findByUserAndDate(user, date)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Steps not found for date " + date));
+                .orElseThrow(() -> new StepsNotFoundException("Steps not found for date: " + date));
 
-        if (steps.getStepCount() != null)
-            existing.setStepCount(steps.getStepCount());
-
-        if (steps.getDailyGoal() != null)
-            existing.setDailyGoal(steps.getDailyGoal());
-
-        if (steps.getDistanceCovered() != null)
-            existing.setDistanceCovered(steps.getDistanceCovered());
-
-        if (steps.getActiveMinutes() != null)
-            existing.setActiveMinutes(steps.getActiveMinutes());
+        if (steps.getStepCount() != null) existing.setStepCount(steps.getStepCount());
+        if (steps.getDailyGoal() != null) existing.setDailyGoal(steps.getDailyGoal());
+        if (steps.getDistanceCovered() != null) existing.setDistanceCovered(steps.getDistanceCovered());
+        if (steps.getActiveMinutes() != null) existing.setActiveMinutes(steps.getActiveMinutes());
 
         return stepsRepository.save(existing);
     }
@@ -79,11 +73,10 @@ public class StepsService {
     @Transactional
     public void delete(UUID userId, LocalDate date) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
         Steps steps = stepsRepository.findByUserAndDate(user, date)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Steps not found for date " + date));
+                .orElseThrow(() -> new StepsNotFoundException("Steps not found for date: " + date));
 
         stepsRepository.delete(steps);
     }
@@ -91,7 +84,7 @@ public class StepsService {
     @Transactional
     public void deleteAll(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
 
         stepsRepository.deleteAll(stepsRepository.findByUser(user));
     }

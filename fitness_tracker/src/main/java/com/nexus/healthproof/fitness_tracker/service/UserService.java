@@ -1,6 +1,7 @@
 package com.nexus.healthproof.fitness_tracker.service;
 
 import com.nexus.healthproof.fitness_tracker.entity.User;
+import com.nexus.healthproof.fitness_tracker.exception.UserNotFoundException;
 import com.nexus.healthproof.fitness_tracker.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +24,16 @@ public class UserService {
         user.setCreatedTime(now);
         user.setLastUpdatedTime(now);
 
+        // Set parent references for child entities
         if (user.getGoals() != null) {
             user.getGoals().forEach(goal -> goal.setUser(user));
         }
-
         if (user.getWeights() != null) {
             user.getWeights().forEach(weight -> weight.setUser(user));
         }
-
-         if (user.getActivities() != null) {
-            user.getActivities().forEach(weight -> weight.setUser(user));
+        if (user.getActivities() != null) {
+            user.getActivities().forEach(activity -> activity.setUser(user));
         }
-
-        // Set parent reference in Steps
         if (user.getSteps() != null) {
             user.getSteps().forEach(step -> step.setUser(user));
         }
@@ -58,7 +56,7 @@ public class UserService {
     @Transactional
     public User updateUser(UUID userId, User userUpdates) {
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User does not exist"));
+                .orElseThrow(() -> new UserNotFoundException("User does not exist with id: " + userId));
 
         if (userUpdates.getUsername() != null) existingUser.setUsername(userUpdates.getUsername());
         if (userUpdates.getGender() != null) existingUser.setGender(userUpdates.getGender());
@@ -78,7 +76,7 @@ public class UserService {
     @Transactional
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User does not exist");
+            throw new UserNotFoundException("User does not exist with id: " + id);
         }
         userRepository.deleteById(id);
     }
